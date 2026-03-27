@@ -9,9 +9,9 @@ class CreateAlerts < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :alerts, [:family_id, :alert_type, :alertable_type, :alertable_id],
+    add_index :alerts, [ :family_id, :alert_type, :alertable_type, :alertable_id ],
               unique: true,
               name: "index_alerts_uniqueness"
-    add_index :alerts, [:family_id, :created_at]
+    add_index :alerts, [ :family_id, :created_at ]
   end
 end
