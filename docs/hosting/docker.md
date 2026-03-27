@@ -1,6 +1,6 @@
-# Self Hosting Maybe with Docker
+# Self Hosting Plutus with Docker
 
-This guide will help you setup, update, and maintain your self-hosted Maybe application with Docker Compose. Docker Compose is the most popular and recommended way to self-host the Maybe app.
+This guide will help you setup, update, and maintain your self-hosted Plutus application with Docker Compose. Docker Compose is the most popular and recommended way to self-host the Plutus app.
 
 ## Setup Guide
 
@@ -38,7 +38,7 @@ cd ~/docker-apps/maybe
 Make sure you are in the directory you just created and run the following command:
 
 ```bash
-# Download the sample compose.yml file from the Maybe Github repository
+# Download the sample compose.yml file from the Plutus Github repository
 curl -o compose.yml https://raw.githubusercontent.com/maybe-finance/maybe/main/compose.example.yml
 ```
 
@@ -106,7 +106,7 @@ This will pull our official Docker image and start the app. You will see logs in
 
 Open your browser, and navigate to `http://localhost:3000`.
 
-If everything is working, you will see the Maybe login screen.
+If everything is working, you will see the Plutus login screen.
 
 ### Step 5: Create your account
 
@@ -117,7 +117,7 @@ The first time you run the app, you will need to register a new account by hitti
 
 ### Step 6: Run the app in the background
 
-Most self-hosting users will want the Maybe app to run in the background on their computer so they can access it at all times. To do this, hit `Ctrl+C` to stop the running process, and then run the following command:
+Most self-hosting users will want the Plutus app to run in the background on their computer so they can access it at all times. To do this, hit `Ctrl+C` to stop the running process, and then run the following command:
 
 ```bash
 docker compose up -d
@@ -137,7 +137,7 @@ If you find bugs or have a feature request, be sure to read through our [contrib
 
 ## How to update your app
 
-The mechanism that updates your self-hosted Maybe app is the GHCR (Github Container Registry) Docker image that you see in the `compose.yml` file:
+The mechanism that updates your self-hosted Plutus app is the GHCR (Github Container Registry) Docker image that you see in the `compose.yml` file:
 
 ```yml
 image: ghcr.io/maybe-finance/maybe:latest
@@ -178,13 +178,13 @@ docker compose up --no-deps -d app # This restarts the app using the newest vers
 
 ### ActiveRecord::DatabaseConnectionError
 
-If you are trying to get Maybe started for the **first time** and run into database connection issues, it is likely because Docker has already initialized the Postgres database with a _different_ default role (usually from a previous attempt to start the app).
+If you are trying to get Plutus started for the **first time** and run into database connection issues, it is likely because Docker has already initialized the Postgres database with a _different_ default role (usually from a previous attempt to start the app).
 
 If you run into this issue, you can optionally **reset the database**.
 
-**PLEASE NOTE: this will delete any existing data that you have in your Maybe database, so proceed with caution.**  For first-time users of the app just trying to get started, you're generally safe to run the commands below.
+**PLEASE NOTE: this will delete any existing data that you have in your Plutus database, so proceed with caution.**  For first-time users of the app just trying to get started, you're generally safe to run the commands below.
 
-By running the commands below, you will delete your existing Maybe database and "reset" it.
+By running the commands below, you will delete your existing Plutus database and "reset" it.
 
 ```
 docker compose down

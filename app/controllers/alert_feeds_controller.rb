@@ -17,6 +17,6 @@ class AlertFeedsController < ActionController::Base
           Current.session = OpenStruct.new(user: user)
           true
         end
-      end || request_http_basic_authentication("Maybe Finance Alerts")
+      end || request_http_basic_authentication("Plutus Alerts")
     end
 end

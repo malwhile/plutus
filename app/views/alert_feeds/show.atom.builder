@@ -1,5 +1,5 @@
 atom_feed language: "en-US" do |feed|
-  feed.title "Maybe Finance Alerts"
+  feed.title "Plutus Alerts"
   feed.updated @alerts.first&.created_at || Time.current
 
   @alerts.each do |alert|
