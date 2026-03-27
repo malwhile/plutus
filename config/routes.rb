@@ -101,6 +101,7 @@ Rails.application.routes.draw do
 
     post :bootstrap, on: :collection
     delete :destroy_all, on: :collection
+    post :merge, on: :member
   end
 
   resources :budgets, only: %i[index show edit update], param: :month_year do

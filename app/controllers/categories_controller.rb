@@ -1,6 +1,7 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[edit update destroy]
+  before_action :set_category, only: %i[edit update destroy merge]
   before_action :set_categories, only: %i[update edit]
+  before_action :set_mergeable_categories, only: :edit
   before_action :set_transaction, only: :create
 
   def index
@@ -50,6 +51,13 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def merge
+    merge_target = Current.family.categories.find(params[:merge_category_id])
+    @category.replace_and_destroy!(merge_target)
+
+    redirect_back_or_to categories_path, notice: t(".success")
+  end
+
   def destroy
     @category.destroy
 
@@ -88,5 +96,9 @@ class CategoriesController < ApplicationController
 
     def category_params
       params.require(:category).permit(:name, :color, :parent_id, :classification, :lucide_icon)
+    end
+
+    def set_mergeable_categories
+      @mergeable_categories = Current.family.categories.alphabetically.where.not(id: @category.id)
     end
 end
