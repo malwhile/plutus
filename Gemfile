@@ -44,7 +44,7 @@ gem "logtail-rails"
 gem "skylight", groups: [ :production ]
 
 # Active Storage
-gem "aws-sdk-s3", "~> 1.177.0", require: false
+gem "aws-sdk-s3", "~> 1.217.0", require: false
 gem "image_processing", ">= 1.2"
 
 # Other
@@ -55,7 +55,7 @@ gem "jbuilder"
 
 # OAuth & API Security
 gem "doorkeeper"
-gem "rack-attack", "~> 6.6"
+gem "rack-attack", "~> 6.8"
 gem "faraday"
 gem "faraday-retry"
 gem "faraday-multipart"
@@ -72,7 +72,7 @@ gem "plaid"
 gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 3.0"
 gem "activerecord-import"
-gem "rubyzip", "~> 2.3"
+gem "rubyzip", "~> 3.2"
 
 # State machines
 gem "aasm"
