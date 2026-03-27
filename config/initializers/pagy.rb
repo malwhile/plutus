@@ -1,4 +1,2 @@
-require "pagy/extras/overflow"
-require "pagy/extras/array"
-
-Pagy::DEFAULT[:overflow] = :last_page
+# Pagy 43.x uses a new architecture
+# Configuration can be added here as needed

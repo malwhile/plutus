@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Api::V1::ChatsController < Api::V1::BaseController
-  include Pagy::Backend
   before_action :require_ai_enabled
   before_action :ensure_read_scope, only: [ :index, :show ]
   before_action :ensure_write_scope, only: [ :create, :update, :destroy ]

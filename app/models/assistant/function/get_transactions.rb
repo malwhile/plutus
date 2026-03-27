@@ -1,6 +1,4 @@
 class Assistant::Function::GetTransactions < Assistant::Function
-  include Pagy::Backend
-
   class << self
     def default_page_size
       50
