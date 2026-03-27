@@ -275,8 +275,7 @@ export default class extends Controller {
 
     if (
       confirm(
-        `Are you sure you want to merge this category into "${mergeTargetName}"? ` +
-        `All transactions will be moved and this category will be deleted.`
+        `Are you sure you want to merge this category into "${mergeTargetName}"? All transactions will be moved and this category will be deleted.`
       )
     ) {
       const existingForm = this.element.querySelector("form");
@@ -284,7 +283,7 @@ export default class extends Controller {
 
       const form = document.createElement("form");
       form.method = "POST";
-      form.action = currentFormAction.replace("/edit", "") + "/merge";
+      form.action = `${currentFormAction.replace("/edit", "")}/merge`;
 
       const input = document.createElement("input");
       input.type = "hidden";
