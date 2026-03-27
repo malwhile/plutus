@@ -259,4 +259,47 @@ export default class extends Controller {
   #backgroundColor(color) {
     return `color-mix(in oklab, ${color} 10%, transparent)`;
   }
+
+  confirmMerge(e) {
+    e.preventDefault();
+
+    const mergeSelectId = document.getElementById("merge_category_id");
+    const mergeTargetId = mergeSelectId.value;
+
+    if (!mergeTargetId) {
+      alert("Please select a category to merge with");
+      return;
+    }
+
+    const mergeTargetName = mergeSelectId.options[mergeSelectId.selectedIndex].text;
+
+    if (
+      confirm(
+        `Are you sure you want to merge this category into "${mergeTargetName}"? All transactions will be moved and this category will be deleted.`
+      )
+    ) {
+      const existingForm = this.element.querySelector("form");
+      const currentFormAction = existingForm?.action || window.location.href;
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = `${currentFormAction.replace("/edit", "")}/merge`;
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "merge_category_id";
+      input.value = mergeTargetId;
+
+      const csrfToken = document.querySelector("meta[name=csrf-token]")?.content;
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "authenticity_token";
+      csrfInput.value = csrfToken;
+
+      form.appendChild(input);
+      form.appendChild(csrfInput);
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
 }

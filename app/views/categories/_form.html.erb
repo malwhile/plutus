@@ -74,5 +74,23 @@
       <%= hidden_field_tag :transaction_id, params[:transaction_id] %>
       <%= f.submit %>
     </section>
+
+    <% if @mergeable_categories.present? %>
+      <hr class="border-primary">
+      <section class="space-y-4">
+        <h3 class="text-base font-semibold text-primary">Merge Category</h3>
+        <div>
+          <label for="merge_category_id" class="block text-sm font-medium text-primary mb-2">Merge with...</label>
+          <select id="merge_category_id" name="merge_category_id" class="w-full rounded-lg border border-primary bg-surface px-3 py-2 text-primary">
+            <option value="">Select a category</option>
+            <% @mergeable_categories.each do |cat| %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% end %>
+          </select>
+          <p class="text-xs text-subdued mt-2">All transactions in this category will be moved to the selected category, and this category will be deleted.</p>
+        </div>
+        <%= button_tag "Merge", type: "button", data: { action: "click->category#confirmMerge" }, class: "w-full inline-flex items-center justify-center gap-1 font-medium whitespace-nowrap px-4 py-3 rounded-xl text-base text-inverse bg-red-500 theme-dark:bg-red-400 hover:bg-red-600 theme-dark:hover:bg-red-500 disabled:bg-red-200 theme-dark:disabled:bg-red-600" %>
+      </section>
+    <% end %>
   <% end %>
 </div>

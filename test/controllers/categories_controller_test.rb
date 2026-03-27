@@ -83,6 +83,22 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to categories_url
   end
 
+  test "merge" do
+    source_category = categories(:food_and_drink)
+    target_category = categories(:entertainment)
+    transaction = transactions(:one)
+    transaction.update(category_id: source_category.id)
+
+    assert_difference "Category.count", -1 do
+      post merge_category_url(source_category), params: {
+        merge_category_id: target_category.id
+      }
+    end
+
+    assert_equal target_category, transaction.reload.category
+    assert_redirected_to categories_url
+  end
+
   test "bootstrap" do
     assert_difference "Category.count", 12 do
       post bootstrap_categories_url
