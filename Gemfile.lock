@@ -401,7 +401,7 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.5)
-    rack-attack (6.7.0)
+    rack-attack (6.8.0)
       rack (>= 1.0, < 4)
     rack-mini-profiler (4.0.0)
       rack (>= 1.2.0)
@@ -671,7 +671,7 @@ DEPENDENCIES
   plaid
   propshaft
   puma (>= 5.0)
-  rack-attack (~> 6.6)
+  rack-attack (~> 6.8)
   rack-mini-profiler
   rails (~> 7.2.2)
   rails-settings-cached
