@@ -1,6 +1,14 @@
 module ApplicationHelper
   include Pagy::NumericHelpers
 
+  def pagy_url_for(pagy, page_number)
+    pagy.page_url(page_number)
+  end
+
+  def pagy_series(pagy)
+    pagy.send(:series)
+  end
+
   def styled_form_with(**options, &block)
     options[:builder] = StyledFormBuilder
     form_with(**options, &block)

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Pagy::Method
   include RestoreLayoutPreferences, Onboardable, Localize, AutoSync, Authentication, Invitable,
           SelfHostable, StoreLocation, Impersonatable, Breadcrumbable,
           FeatureGuardable, Notifiable
@@ -6,6 +7,12 @@ class ApplicationController < ActionController::Base
   before_action :detect_os
   before_action :set_default_chat
   before_action :set_active_storage_url_options
+
+  protected
+
+    def pagy_array(array, **options)
+      pagy(:offset, array, **options)
+    end
 
   private
     def detect_os

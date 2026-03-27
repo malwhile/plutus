@@ -14,5 +14,8 @@
 		"format": "biome format --write"
 	},
 	"author": "",
-	"license": "ISC"
+	"license": "ISC",
+	"dependencies": {
+		"biome": "^0.3.3"
+	}
 }

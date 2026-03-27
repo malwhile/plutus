@@ -24,7 +24,7 @@ export default class extends Controller {
       })
       .catch((error) => {
         console.error("Clipboard: Failed to copy text:", error);
-        alert("Failed to copy to clipboard. This may be a browser permission issue.\n\nError: " + error.message);
+          alert(`Failed·to·copy·to·clipboard.·This·may·be·a·browser·permission·issue.\n\nError:·${error.message}`);
       });
   }
 
