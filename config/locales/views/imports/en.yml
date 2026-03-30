@@ -10,6 +10,8 @@ en:
           details.
         title: Clean your data
     configurations:
+      investment_import:
+        date_format_label: Date format
       mint_import:
         date_format_label: Date format
       show:
@@ -77,6 +79,7 @@ en:
       description: You can manually import various types of data via CSV or use one
         of our import templates like Mint.
       import_accounts: Import accounts
+      import_investment_snapshots: Import investment snapshots
       import_mint: Import from Mint
       import_portfolio: Import investments
       import_transactions: Import transactions

@@ -1,0 +1,3 @@
+date,beginning_balance,deposits_and_withdrawals,market_gain_loss,income_returns,personal_investment_returns,cumulative_returns,ending_balance,currency
+03/2026,10000.00,500.00,250.00,50.00,2.5,15.3,10800.00,USD
+02/2026,9500.00,0.00,500.00,25.00,2.1,12.5,10000.00,USD
