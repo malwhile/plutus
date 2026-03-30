@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_07_25_100200) do
+ActiveRecord::Schema[8.1].define(version: 2025_07_25_100400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -347,15 +347,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_25_100200) do
   create_table "import_rows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "account"
     t.string "amount"
+    t.string "beginning_balance"
     t.string "category"
     t.datetime "created_at", null: false
+    t.string "cumulative_returns"
     t.string "currency"
     t.string "date"
+    t.string "deposits_and_withdrawals"
+    t.string "ending_balance"
     t.string "entity_type"
     t.string "exchange_operating_mic"
     t.uuid "import_id", null: false
+    t.string "income_returns"
+    t.string "market_gain_loss"
     t.string "name"
     t.text "notes"
+    t.string "personal_investment_returns"
     t.string "price"
     t.string "qty"
     t.string "tags"
@@ -370,21 +377,28 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_25_100200) do
     t.string "amount_col_label"
     t.string "amount_type_inflow_value"
     t.string "amount_type_strategy", default: "signed_amount"
+    t.string "beginning_balance_col_label"
     t.string "category_col_label"
     t.string "col_sep", default: ","
     t.jsonb "column_mappings"
     t.datetime "created_at", null: false
+    t.string "cumulative_returns_col_label"
     t.string "currency_col_label"
     t.string "date_col_label"
     t.string "date_format", default: "%m/%d/%Y"
+    t.string "deposits_and_withdrawals_col_label"
+    t.string "ending_balance_col_label"
     t.string "entity_type_col_label"
     t.string "error"
     t.string "exchange_operating_mic_col_label"
     t.uuid "family_id", null: false
+    t.string "income_returns_col_label"
+    t.string "market_gain_loss_col_label"
     t.string "name_col_label"
     t.string "normalized_csv_str"
     t.string "notes_col_label"
     t.string "number_format"
+    t.string "personal_investment_returns_col_label"
     t.string "price_col_label"
     t.string "qty_col_label"
     t.string "raw_file_str"
@@ -395,6 +409,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_25_100200) do
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["family_id"], name: "index_imports_on_family_id"
+  end
+
+  create_table "investment_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.decimal "beginning_balance", precision: 19, scale: 4
+    t.datetime "created_at", null: false
+    t.decimal "cumulative_returns", precision: 19, scale: 4
+    t.string "currency", null: false
+    t.date "date", null: false
+    t.decimal "deposits_and_withdrawals", precision: 19, scale: 4
+    t.decimal "ending_balance", precision: 19, scale: 4
+    t.uuid "import_id"
+    t.decimal "income_returns", precision: 19, scale: 4
+    t.decimal "market_gain_loss", precision: 19, scale: 4
+    t.decimal "personal_investment_returns", precision: 19, scale: 4
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "date", "currency"], name: "index_investment_values_on_account_id_and_date_and_currency", unique: true
+    t.index ["account_id"], name: "index_investment_values_on_account_id"
+    t.index ["import_id"], name: "index_investment_values_on_import_id"
   end
 
   create_table "investments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -863,6 +896,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_25_100200) do
   add_foreign_key "impersonation_sessions", "users", column: "impersonator_id"
   add_foreign_key "import_rows", "imports"
   add_foreign_key "imports", "families"
+  add_foreign_key "investment_values", "accounts"
+  add_foreign_key "investment_values", "imports"
   add_foreign_key "invitations", "families"
   add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "merchants", "families"
