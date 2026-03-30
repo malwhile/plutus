@@ -1,5 +1,5 @@
 budget_exceeded_one:
-  family: one
+  family: dylan_family
   alert_type: budget_exceeded
   alertable_type: BudgetCategory
   alertable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
@@ -11,7 +11,7 @@ budget_exceeded_one:
     budget_month: "March 2026"
 
 large_transaction_one:
-  family: one
+  family: dylan_family
   alert_type: large_transaction
   alertable_type: Entry
   alertable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>

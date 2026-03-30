@@ -12,3 +12,9 @@ account:
   family: dylan_family
   type: AccountImport
   status: pending
+
+investment:
+  family: dylan_family
+  type: InvestmentImport
+  status: pending
+  date_format: "%m/%Y"

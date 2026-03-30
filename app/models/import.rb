@@ -1,7 +1,7 @@
 class Import < ApplicationRecord
   MaxRowCountExceededError = Class.new(StandardError)
 
-  TYPES = %w[TransactionImport TradeImport AccountImport MintImport].freeze
+  TYPES = %w[TransactionImport TradeImport AccountImport MintImport InvestmentImport].freeze
   SIGNAGE_CONVENTIONS = %w[inflows_positive inflows_negative]
   SEPARATORS = [ [ "Comma (,)", "," ], [ "Semicolon (;)", ";" ] ].freeze
 
@@ -40,6 +40,7 @@ class Import < ApplicationRecord
   has_many :mappings, dependent: :destroy
   has_many :accounts, dependent: :destroy
   has_many :entries, dependent: :destroy
+  has_many :investment_values, dependent: :destroy
 
   class << self
     def parse_csv_str(csv_str, col_sep: ",")
@@ -220,7 +221,11 @@ class Import < ApplicationRecord
         "qty_col_label", "ticker_col_label", "price_col_label",
         "entity_type_col_label", "notes_col_label", "currency_col_label",
         "date_format", "signage_convention", "number_format",
-        "exchange_operating_mic_col_label"
+        "exchange_operating_mic_col_label",
+        "beginning_balance_col_label", "deposits_and_withdrawals_col_label",
+        "market_gain_loss_col_label", "income_returns_col_label",
+        "personal_investment_returns_col_label", "cumulative_returns_col_label",
+        "ending_balance_col_label"
       )
     )
   end
