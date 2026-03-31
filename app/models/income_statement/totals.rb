@@ -1,7 +1,8 @@
 class IncomeStatement::Totals
-  def initialize(family, transactions_scope:)
+  def initialize(family, transactions_scope:, investment_values_scope: nil)
     @family = family
     @transactions_scope = transactions_scope
+    @investment_values_scope = investment_values_scope
   end
 
   def call
@@ -29,7 +30,7 @@ class IncomeStatement::Totals
     # OPTIMIZED: Direct SUM aggregation without unnecessary time bucketing
     # Eliminates CTE and intermediate date grouping for maximum performance
     def optimized_query_sql
-      <<~SQL
+      transaction_sql = <<~SQL
         SELECT
           c.id as category_id,
           c.parent_id as parent_category_id,
@@ -46,8 +47,31 @@ class IncomeStatement::Totals
         )
         WHERE at.kind NOT IN ('funds_movement', 'one_time', 'cc_payment')
           AND ae.excluded = false
-        GROUP BY c.id, c.parent_id, CASE WHEN ae.amount < 0 THEN 'income' ELSE 'expense' END;
+        GROUP BY c.id, c.parent_id, CASE WHEN ae.amount < 0 THEN 'income' ELSE 'expense' END
       SQL
+
+      if @investment_values_scope.present?
+        investment_sql = <<~SQL
+          SELECT
+            NULL::uuid as category_id,
+            NULL::uuid as parent_category_id,
+            'income' as classification,
+            ABS(SUM(iv.income_returns * COALESCE(er.rate, 1))) as total,
+            0 as transactions_count
+          FROM (#{@investment_values_scope.to_sql}) iv
+          LEFT JOIN exchange_rates er ON (
+            er.date = iv.date AND
+            er.from_currency = iv.currency AND
+            er.to_currency = :target_currency
+          )
+          WHERE iv.income_returns IS NOT NULL
+            AND iv.income_returns != 0
+          HAVING ABS(SUM(iv.income_returns * COALESCE(er.rate, 1))) > 0
+        SQL
+        "#{transaction_sql} UNION ALL #{investment_sql}"
+      else
+        transaction_sql
+      end
     end
 
     def sql_params

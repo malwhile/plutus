@@ -284,4 +284,108 @@ class IncomeStatementTest < ActiveSupport::TestCase
     assert_equal 5, totals.transactions_count
     assert_equal Money.new(1050, @family.currency), totals.expense_money # 900 + 150
   end
+
+  # NEW TESTS: Investment Income
+  test "includes investment income returns in income totals" do
+    # Create an investment account
+    investment_account = @family.accounts.create!(
+      name: "Investment",
+      currency: @family.currency,
+      balance: 10000,
+      accountable: Investment.new
+    )
+
+    # Create investment value with income returns
+    InvestmentValue.create!(
+      account: investment_account,
+      date: Date.current,
+      currency: @family.currency,
+      income_returns: 500
+    )
+
+    income_statement = IncomeStatement.new(@family)
+    income_totals = income_statement.income_totals(period: Period.last_30_days)
+
+    # Should include both transaction income and investment income returns
+    expected_total = 1000 + 500 # original transaction + investment returns
+    assert_equal expected_total, income_totals.total
+  end
+
+  test "investment income appears as distinct category in breakdown" do
+    # Create an investment account
+    investment_account = @family.accounts.create!(
+      name: "Investment",
+      currency: @family.currency,
+      balance: 10000,
+      accountable: Investment.new
+    )
+
+    # Create investment value with income returns
+    InvestmentValue.create!(
+      account: investment_account,
+      date: Date.current,
+      currency: @family.currency,
+      income_returns: 500
+    )
+
+    income_statement = IncomeStatement.new(@family)
+    income_totals = income_statement.income_totals(period: Period.last_30_days)
+
+    # Should have a category for "Investment Returns"
+    investment_returns_category = income_totals.category_totals.find { |ct| ct.category.name == "Investment Returns" }
+    assert_not_nil investment_returns_category
+    assert_equal 500, investment_returns_category.total
+  end
+
+  test "deposits and withdrawals do not appear in income statement" do
+    # Create an investment account
+    investment_account = @family.accounts.create!(
+      name: "Investment",
+      currency: @family.currency,
+      balance: 10000,
+      accountable: Investment.new
+    )
+
+    # Create investment value with deposits_and_withdrawals but no income_returns
+    InvestmentValue.create!(
+      account: investment_account,
+      date: Date.current,
+      currency: @family.currency,
+      deposits_and_withdrawals: 1000,
+      income_returns: 0
+    )
+
+    income_statement = IncomeStatement.new(@family)
+    income_totals = income_statement.income_totals(period: Period.last_30_days)
+
+    # Should only include the original transaction income
+    expected_total = 1000
+    assert_equal expected_total, income_totals.total
+  end
+
+  test "cache version includes investment values timestamp" do
+    # Create an investment account
+    investment_account = @family.accounts.create!(
+      name: "Investment",
+      currency: @family.currency,
+      balance: 10000,
+      accountable: Investment.new
+    )
+
+    # Create investment value
+    iv = InvestmentValue.create!(
+      account: investment_account,
+      date: Date.current,
+      currency: @family.currency,
+      income_returns: 500
+    )
+
+    # The cache version should be based on investment_values.maximum(:updated_at)
+    # since entries are empty in this test case
+    expected_cache = iv.updated_at.to_i
+    actual_cache = @family.entries_cache_version
+
+    # Cache version should reflect the investment value's updated_at
+    assert_equal expected_cache, actual_cache
+  end
 end

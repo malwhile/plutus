@@ -25,6 +25,7 @@ class Family < ApplicationRecord
   has_many :rules, dependent: :destroy
   has_many :trades, through: :accounts
   has_many :holdings, through: :accounts
+  has_many :investment_values, through: :accounts
 
   has_many :tags, dependent: :destroy
   has_many :categories, dependent: :destroy
@@ -110,8 +111,19 @@ class Family < ApplicationRecord
   # Used for invalidating entry related aggregation queries
   def entries_cache_version
     @entries_cache_version ||= begin
-      ts = entries.maximum(:updated_at)
-      ts.present? ? ts.to_i : 0
+      entry_ts = entries.maximum(:updated_at)
+      iv_ts = investment_values.maximum(:updated_at)
+
+      case [ entry_ts.present?, iv_ts.present? ]
+      when [ true, true ]
+        [ entry_ts, iv_ts ].max.to_i
+      when [ true, false ]
+        entry_ts.to_i
+      when [ false, true ]
+        iv_ts.to_i
+      else
+        0
+      end
     end
   end
 

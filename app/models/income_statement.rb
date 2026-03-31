@@ -9,6 +9,17 @@ class IncomeStatement
     @family = family
   end
 
+  InvestmentReturnsCategory = Data.define(:id, :name, :color, :parent_id) do
+    def subcategory? = false
+  end
+
+  INVESTMENT_RETURNS_CATEGORY = InvestmentReturnsCategory.new(
+    id: "investment_returns",
+    name: "Investment Returns",
+    color: "#4da568",
+    parent_id: nil
+  )
+
   def totals(transactions_scope: nil)
     transactions_scope ||= family.transactions.visible
 
@@ -64,20 +75,30 @@ class IncomeStatement
     def build_period_total(classification:, period:, account_ids: nil)
       scope = family.transactions.visible.in_period(period)
       scope = scope.where(account_id: account_ids) if account_ids.present?
-      totals = totals_query(transactions_scope: scope).select { |t| t.classification == classification }
+
+      iv_scope = family.investment_values.in_period(period).joins(:account).merge(Account.visible)
+      iv_scope = iv_scope.for_accounts(account_ids) if account_ids.present?
+
+      totals = totals_query(transactions_scope: scope, investment_values_scope: iv_scope).select { |t| t.classification == classification }
       classification_total = totals.sum(&:total)
 
       uncategorized_category = family.categories.uncategorized
 
+      # Separate investment income from nil-category rows
+      investment_income_total = totals.select { |t| t.category_id.nil? }.sum(&:total)
+
+      # Exclude investment income rows from the totals used for category calculation
+      categorized_totals = totals.select { |t| t.category_id.present? }
+
       category_totals = [ *categories, uncategorized_category ].map do |category|
         subcategory = categories.find { |c| c.id == category.parent_id }
 
-        parent_category_total = totals.select { |t| t.category_id == category.id }&.sum(&:total) || 0
+        parent_category_total = categorized_totals.select { |t| t.category_id == category.id }&.sum(&:total) || 0
 
         children_totals = if category == uncategorized_category
           0
         else
-          totals.select { |t| t.parent_category_id == category.id }&.sum(&:total) || 0
+          categorized_totals.select { |t| t.parent_category_id == category.id }&.sum(&:total) || 0
         end
 
         category_total = parent_category_total + children_totals
@@ -89,6 +110,17 @@ class IncomeStatement
           total: category_total,
           currency: family.currency,
           weight: weight,
+        )
+      end
+
+      # Add investment returns as a distinct category if present
+      if classification == "income" && investment_income_total > 0
+        weight = (investment_income_total.to_f / classification_total) * 100
+        category_totals << CategoryTotal.new(
+          category: INVESTMENT_RETURNS_CATEGORY,
+          total: investment_income_total,
+          currency: family.currency,
+          weight: weight
         )
       end
 
@@ -114,12 +146,12 @@ class IncomeStatement
       ]) { CategoryStats.new(family, interval:).call }
     end
 
-    def totals_query(transactions_scope:)
-      sql_hash = Digest::MD5.hexdigest(transactions_scope.to_sql)
+    def totals_query(transactions_scope:, investment_values_scope: nil)
+      sql_hash = Digest::MD5.hexdigest("#{transactions_scope.to_sql}#{investment_values_scope&.to_sql}")
 
       Rails.cache.fetch([
         "income_statement", "totals_query", family.id, sql_hash, family.entries_cache_version
-      ]) { Totals.new(family, transactions_scope: transactions_scope).call }
+      ]) { Totals.new(family, transactions_scope: transactions_scope, investment_values_scope: investment_values_scope).call }
     end
 
     def monetizable_currency
