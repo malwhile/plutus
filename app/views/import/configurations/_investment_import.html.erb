@@ -1,0 +1,35 @@
+<%# locals: (import:) %>
+
+<%= styled_form_with model: @import, url: import_configuration_path(@import), scope: :import, method: :patch, class: "space-y-4" do |form| %>
+  <div class="space-y-4">
+    <% unless import.account.present? %>
+      <%= form.select :account_id,
+                      Current.family.accounts.where(accountable_type: "Investment").map { |a| [a.name, a.id] },
+                      { include_blank: "Select account", label: "Account" },
+                      required: true %>
+    <% end %>
+
+    <div class="flex items-center gap-4">
+      <%= form.select :date_col_label, import.csv_headers, { include_blank: "Select column", label: "Date" }, required: true %>
+      <%= form.select :date_format,
+                      [["MM/YYYY", "%m/%Y"], ["YYYY/MM", "%Y/%m"], ["MM-YYYY", "%m-%Y"], ["YYYY-MM", "%Y-%m"]],
+                      { label: t(".date_format_label") },
+                      required: true %>
+    </div>
+
+    <%= form.select :ending_balance_col_label, import.csv_headers, { include_blank: "Select column", label: "Ending Balance" }, required: true %>
+    <%= form.select :beginning_balance_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Beginning Balance" } %>
+    <%= form.select :deposits_and_withdrawals_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Deposits & Withdrawals" } %>
+    <%= form.select :market_gain_loss_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Market Gain/Loss" } %>
+    <%= form.select :income_returns_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Income Returns" } %>
+    <%= form.select :personal_investment_returns_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Personal Investment Returns" } %>
+    <%= form.select :cumulative_returns_col_label, import.csv_headers, { include_blank: "Leave empty", label: "Cumulative Returns" } %>
+
+    <div class="flex items-center gap-4">
+      <%= form.select :currency_col_label, import.csv_headers, { include_blank: "Default", label: "Currency" } %>
+      <%= form.select :number_format, Import::NUMBER_FORMATS.keys, { label: "Format", prompt: "Select format" }, required: true %>
+    </div>
+  </div>
+
+  <%= form.submit "Apply configuration", disabled: import.complete? %>
+<% end %>

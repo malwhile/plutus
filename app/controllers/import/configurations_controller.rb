@@ -21,6 +21,7 @@ class Import::ConfigurationsController < ApplicationController
 
     def import_params
       params.require(:import).permit(
+        :account_id,
         :date_col_label,
         :amount_col_label,
         :name_col_label,
@@ -34,6 +35,13 @@ class Import::ConfigurationsController < ApplicationController
         :entity_type_col_label,
         :notes_col_label,
         :currency_col_label,
+        :beginning_balance_col_label,
+        :deposits_and_withdrawals_col_label,
+        :market_gain_loss_col_label,
+        :income_returns_col_label,
+        :personal_investment_returns_col_label,
+        :cumulative_returns_col_label,
+        :ending_balance_col_label,
         :date_format,
         :number_format,
         :signage_convention,

@@ -22,7 +22,14 @@ module ImportsHelper
       ticker: "Ticker",
       exchange: "Exchange",
       price: "Price",
-      entity_type: "Type"
+      entity_type: "Type",
+      beginning_balance: "Beginning Balance",
+      deposits_and_withdrawals: "Deposits & Withdrawals",
+      market_gain_loss: "Market Gain/Loss",
+      income_returns: "Income Returns",
+      personal_investment_returns: "Personal Investment Returns",
+      cumulative_returns: "Cumulative Returns",
+      ending_balance: "Ending Balance"
     }[key]
   end
 
@@ -31,7 +38,8 @@ module ImportsHelper
       transactions: DryRunResource.new(label: "Transactions", icon: "credit-card", text_class: "text-cyan-500", bg_class: "bg-cyan-500/5"),
       accounts: DryRunResource.new(label: "Accounts", icon: "layers", text_class: "text-orange-500", bg_class: "bg-orange-500/5"),
       categories: DryRunResource.new(label: "Categories", icon: "shapes", text_class: "text-blue-500", bg_class: "bg-blue-500/5"),
-      tags: DryRunResource.new(label: "Tags", icon: "tags", text_class: "text-violet-500", bg_class: "bg-violet-500/5")
+      tags: DryRunResource.new(label: "Tags", icon: "tags", text_class: "text-violet-500", bg_class: "bg-violet-500/5"),
+      investment_snapshots: DryRunResource.new(label: "Investment Snapshots", icon: "trending-up", text_class: "text-green-500", bg_class: "bg-green-500/5")
     }
 
     map[key]
@@ -62,7 +70,7 @@ module ImportsHelper
 
   private
     def permitted_import_types
-      %w[transaction_import trade_import account_import mint_import]
+      %w[transaction_import trade_import account_import mint_import investment_import]
     end
 
     DryRunResource = Struct.new(:label, :icon, :text_class, :bg_class, keyword_init: true)

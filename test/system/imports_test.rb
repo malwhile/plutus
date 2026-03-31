@@ -190,4 +190,46 @@ class ImportsTest < ApplicationSystemTestCase
 
     click_on "Back to dashboard"
   end
+
+  test "investment snapshot import" do
+    visit new_import_path
+
+    click_on "Import investment snapshots"
+
+    within_testid("import-tabs") do
+      click_on "Copy & Paste"
+    end
+
+    fill_in "import[raw_file_str]", with: file_fixture("imports/investment_snapshots.csv").read
+
+    within "form" do
+      click_on "Upload CSV"
+    end
+
+    # Select account first (since none was set at creation time)
+    select "Robinhood Brokerage Account", from: "import[account_id]"
+
+    # Map CSV columns to import fields
+    # CSV headers: date, beginning_balance, deposits_and_withdrawals, market_gain_loss, income_returns, personal_investment_returns, cumulative_returns, ending_balance, currency
+    select "date", from: "import[date_col_label]"
+    select "MM/YYYY", from: "import[date_format]"
+    select "ending_balance", from: "import[ending_balance_col_label]"
+    select "currency", from: "import[currency_col_label]"
+
+    click_on "Apply configuration"
+
+    click_on "Next step"
+
+    click_on "Publish import"
+
+    assert_text "Import in progress"
+
+    perform_enqueued_jobs
+
+    click_on "Check status"
+
+    assert_text "Import successful"
+
+    click_on "Back to dashboard"
+  end
 end
