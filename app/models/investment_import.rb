@@ -6,7 +6,7 @@ class InvestmentImport < Import
 
     transaction do
       rows.each do |row|
-        InvestmentValue.create!(
+        investment_value = InvestmentValue.create!(
           account: account,
           import: self,
           date: Date.strptime(row.date, date_format),
@@ -19,12 +19,29 @@ class InvestmentImport < Import
           cumulative_returns: row.cumulative_returns.presence&.to_d,
           ending_balance: row.ending_balance.presence&.to_d
         )
+
+        # Create an entry for the investment snapshot
+        if investment_value.ending_balance.present?
+          account.entries.create!(
+            entryable: Valuation.new(kind: "reconciliation"),
+            amount: investment_value.ending_balance,
+            name: "Investment snapshot",
+            currency: investment_value.currency,
+            date: investment_value.date,
+            import: self
+          )
+        end
       end
+
+      # Update account balance to the latest ending_balance
+      latest_value = account.investment_values.order(date: :desc).first
+      account.update!(balance: latest_value.ending_balance) if latest_value&.ending_balance.present?
     end
   end
 
   def revert
     InvestmentValue.where(import: self).destroy_all
+    Entry.where(import: self).destroy_all
     family.sync_later
     update! status: :pending
   rescue => error
